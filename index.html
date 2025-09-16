@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente N8N Vídeos</title>
+    
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #6a1b9a; /* n8n purple */
+            --primary-light: #f3e5f5;
+            --border-color: #ddd;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+                Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: linear-gradient(135deg, #6a1b9a 0%, #ab47bc 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        header p {
+            margin: 5px 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1400px;
+            margin: 20px auto;
+            gap: 20px;
+            padding: 0 10px;
+        }
+        @media (min-width: 1024px) {
+            .container {
+                flex-direction: row;
+            }
+        }
+        .sidebar {
+            flex: 0 0 280px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+        .sidebar h3 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .sidebar a:hover {
+            background-color: var(--bg-color);
+        }
+        .sidebar a.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        .content {
+            flex: 1;
+        }
+        .content section {
+            display: none; /* Oculta todas por padrão */
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        .content section.visible {
+            display: block; /* Mostra apenas a ativa */
+        }
+        .content h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 10px;
+        }
+        ul, ol {
+            line-height: 1.7;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em;
+        }
+        .step {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #fafafa;
+        }
+        .step-header input[type='checkbox'] {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        .step-header h3 {
+            margin: 0;
+            font-size: 1.4em;
+            color: #444;
+        }
+        .step-content {
+            padding: 0 20px 20px 55px;
+            line-height: 1.7;
+            color: #555;
+        }
+        .step.completed {
+            border-left: 5px solid #4caf50;
+        }
+        .step.completed .step-header h3 {
+            text-decoration: line-through;
+            color: #888;
+        }
+        
+        /* Estilos do Botão de Ajuda */
+        .helper-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            border: 1px solid #d1c4e9;
+        }
+        .help-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .help-button:hover {
+            background-color: #5a108a;
+        }
+        .help-button .icon {
+            font-size: 1.2em;
+        }
+        .help-content {
+            display: none; /* Oculto por padrão */
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .help-content .response-header {
+            background: #fafafa;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 6px 6px 0 0;
+        }
+        .help-content .response-content {
+            padding: 15px;
+            line-height: 1.6;
+        }
+    </style>
+    </head>
+<body>
+
+    <header>
+        <h1>
+            <img src="https://n8n.io/n8n-logo.svg" alt="n8n Logo" height="40" width="40" />
+            Assistente de Implementação: Fábrica de Vídeos
+        </h1>
+        <p>
+            [cite_start]Um guia passo-a-passo para implementar seu workflow de automação de vídeo com n8n [cite: 1]
+        </p>
+    </header>
+
+    <main class="container">
+        <nav class="sidebar">
+            <h3>Navegação</h3>
+            [cite_start]<a data-target="parte1" class="nav-link active">Parte 1: Fundação (Google) [cite: 17]</a>
+            [cite_start]<a data-target="parte2" class="nav-link">Parte 2: Chaves de API (IA) [cite: 18]</a>
+            [cite_start]<a data-target="parte3" class="nav-link">Parte 3: YouTube [cite: 19]</a>
+            [cite_start]<a data-target="parte4" class="nav-link">Parte 4: Montagem N8N [cite: 20]</a>
+        </nav>
+
+        <div class="content">
+            <section id="parte1" class="visible">
+                [cite_start]<h2>Parte 1: A Fundação - Configurando a Planilha Google e o Google Cloud [cite: 21]</h2>
+                <p>
+                    [cite_start]Foco na configuração da Planilha Google [cite: 17][cite_start], que servirá como base de dados[cite: 17], e na configuração essencial dentro do Google Cloud
+                    [cite_start]Platform (GCP) para permitir a comunicação segura com o n8n[cite: 17].
+                </p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step1.1" />
+                        <label for="step1.1"><h3>1.1. [cite_start]Criando a Estrutura da Planilha Google [cite: 22]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        [cite_start]<p>Acesse o Google Sheets e crie uma nova planilha em branco[cite: 26].</p>
+                        [cite_start]<p>Renomeie para "Conteúdo de Vídeos Automatizados"[cite: 27].</p>
+                        <p>
+                            [cite_start]Defina os seguintes cabeçalhos na primeira linha[cite: 28]:
+                        </p>
+                        <ul>
+                            [cite_start]<li><code>TEMA</code>: O título ou tema principal do vídeo. [cite: 29]</li>
+                            [cite_start]<li><code>ROTEIRO</code>: O texto completo que será usado pela IA. [cite: 30]</li>
+                            [cite_start]<li><code>STATUS</code>: Funcionará como um "semáforo" para o workflow[cite: 31].</li>
+                            [cite_start]<li><code>VIDEO_URL</code>: Onde o link do YouTube será armazenado. [cite: 33]</li>
+                            [cite_start]<li><code>TIKTOK_URL</code>: Onde o link do TikTok será armazenado. [cite: 34]</li>
+                        </ul>
+                        [cite_start]<p>Adicione uma linha de exemplo com TEMA e ROTEIRO[cite: 35].</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step1.2" />
+                        <label for="step1.2"><h3>1.2. [cite_start]Desvendando o Google Cloud (GCP) [cite: 37]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Acesse o Google Cloud Console e crie um "New Project"[cite: 42, 43].
+                        </p>
+                        [cite_start]<p>Dê um nome, como "Automacao-n8n-Videos"[cite: 44].</p>
+                        <p>
+                            [cite_start]Na barra de pesquisa, procure por "Google Sheets API" e clique em "Enable"[cite: 47, 48].
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step1.3" />
+                        <label for="step1.3"><h3>1.3. [cite_start]A Tela de Consentimento OAuth [cite: 50]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Vá para "APIs & Services" > "OAuth consent screen"[cite: 54].
+                        </p>
+                        <p>
+                            [cite_start]Selecione o tipo de usuário "External" e clique em "Create"[cite: 55].
+                        </p>
+                        [cite_start]<p>Preencha os campos obrigatórios (App name, User support email)[cite: 57, 58, 59].</p>
+                        <p>
+                            [cite_start]Clique em "Save and Continue" nas seções "Scopes" e "Optional info"[cite: 61].
+                        </p>
+                        <p>
+                            [cite_start]Em "Test users", clique em "Add Users" e adicione seu próprio e-mail[cite: 63]. [cite_start]Este passo é vital[cite: 64].
+                        </p>
+                        
+                        <div class="helper-container">
+                            <button class="help-button"><span class="icon">🤖</span> Preciso de ajuda com este passo</button>
+                            <div class="help-content">
+                                <div class="response-header">
+                                    <strong>🤖 Resposta do Programador Sênior:</strong>
+                                </div>
+                                <div class="response-content">
+                                    <p><strong>Por que adicionar a mim mesmo como 'Test User'?</strong></p>
+                                    [cite_start]<p>Enquanto sua aplicação está em "modo de teste" no Google, ele só permite que contas de e-mail listadas especificamente autorizem a aplicação[cite: 64].</p>
+                                    <p>Se você pular este passo, ao tentar conectar o n8n (no passo 1.5), o Google vai bloquear seu login com um erro, dizendo que a aplicação não é verificada e que você (seu e-mail) não está na lista de testadores. É uma medida de segurança do Google.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step1.4" />
+                        <label for="step1.4"><h3>1.4. [cite_start]Gerando Suas Credenciais (Client ID e Secret) [cite: 66]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Vá para "APIs & Services" > "Credentials"[cite: 70].
+                        </p>
+                        <p>
+                            [cite_start]Clique em "+ Create Credentials" > "OAuth client ID"[cite: 71].
+                        </p>
+                        [cite_start]<p>Application type: "Web application"[cite: 72].</p>
+                        <p>
+                            [cite_start]<strong>Etapa Crítica:</strong> "Authorized redirect URIs"[cite: 74].
+                        </p>
+                        <ol>
+                            <li>
+                                No seu workflow n8n, adicione um nó "Google Sheets" e clique em "Create New"
+                                [cite_start]Credential[cite: 76].
+                            </li>
+                            <li>
+                                [cite_start]Copie o "OAuth Redirect URL" que aparece na janela do n8n[cite: 78].
+                            </li>
+                            <li>
+                                Cole este URL no campo "Authorized redirect URIs" no Google Cloud e clique em "+ Add
+                                [cite_start]URI"[cite: 79].
+                            </li>
+                        </ol>
+                        <p>
+                            Clique em "Create" no GCP. [cite_start]Copie seu Client ID e Client Secret[cite: 80, 81].
+                        </p>
+                        
+                        <div class="helper-container">
+                            <button class="help-button"><span class="icon">🤖</span> Estou com erro de "redirect_uri_mismatch"!</button>
+                            <div class="help-content">
+                                <div class="response-header">
+                                    <strong>🤖 Resposta do Programador Sênior:</strong>
+                                </div>
+                                <div class="response-content">
+                                    [cite_start]<p>Esse é o erro mais comum[cite: 75]! 99% das vezes, o problema é um dos seguintes:</p>
+                                    <ul>
+                                        <li><strong>Copiou errado:</strong> Você copiou o URL do n8n com um espaço a mais no início ou no fim.</li>
+                                        <li><strong>Colou errado:</strong> Você colou no Google Cloud, mas não clicou em "+ Add URI" antes de salvar.</li>
+                                        <li><strong>URL errado:</strong> Se você usa o n8n.io (cloud), o URL é um. Se usa o n8n desktop (local), o URL é outro (algo como `http://localhost...`). [cite_start]Você *precisa* copiar o URL exato que o *seu* n8n está mostrando na janela de credenciais[cite: 78].</li>
+                                    </ul>
+                                    <p><strong>Solução:</strong> Vá ao n8n, abra a credencial, copie o URL. [cite_start]Vá ao Google Cloud, edite seu "OAuth client ID"[cite: 71], apague o URI que está lá e cole o novo. Salve tudo e tente de novo.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step1.5" />
+                        <label for="step1.5"><h3>1.5. [cite_start]Conectando o n8n à Sua Planilha [cite: 82]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Volte para a janela de credenciais do Google Sheets no n8n[cite: 84].
+                        </p>
+                        <p>
+                            [cite_start]Cole o Client ID e o Client Secret obtidos do GCP[cite: 85].
+                        </p>
+                        <p>
+                            [cite_start]Clique em "Sign in with Google" e selecione sua conta (a mesma do "Test User")[cite: 86, 87].
+                        </p>
+                        <p>
+                            [cite_start]Você verá um aviso "O Google não verificou esta aplicação"[cite: 88]. [cite_start]Isto é normal[cite: 89].
+                        </p>
+                        <p>
+                            [cite_start]Clique em "Avançadas" e "Aceder a [Nome da sua aplicação] (não seguro)"[cite: 90].
+                        </p>
+                        <p>Conceda as permissões. [cite_start]Sua credencial estará conectada[cite: 91, 92].</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="parte2">
+                [cite_start]<h2>Parte 2: Obtendo as Chaves para a Magia da IA e Publicação [cite: 95]</h2>
+                <p>
+                    [cite_start]Obtenção das credenciais para os serviços de terceiros (Fal.ai e Upload-post.com)[cite: 18, 96].
+                </p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step2.1" />
+                        <label for="step2.1"><h3>2.1. [cite_start]Fal.ai: Geração de Vídeos por IA [cite: 101]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        [cite_start]<p>Crie uma conta em fal.ai[cite: 104].</p>
+                        <p>
+                            Navegue até o dashboard de chaves (ex: fal.ai/dashboard/keys) e gere uma nova chave de
+                            [cite_start]API[cite: 105, 106].
+                        </p>
+                        <p>
+                            [cite_start]No n8n, vá em "Credentials" > "Add credential"[cite: 109, 110].
+                        </p>
+                        <p>
+                            [cite_start]Procure por "Generic Credential Type" e selecione "Header Auth"[cite: 111].
+                        </p>
+                        [cite_start]<p>Preencha os campos[cite: 112]:</p>
+                        <ul>
+                            [cite_start]<li>Credential Name: <code>Fal.ai API Key</code> [cite: 113]</li>
+                            [cite_start]<li>Name (Header Name): <code>Authorization</code> [cite: 114]</li>
+                            <li>
+                                [cite_start]Value (Header Value): <code>Key SEU_API_KEY_AQUI</code> (Substitua pela sua chave)[cite: 115].
+                            </li>
+                        </ul>
+                        <div class="helper-container">
+                            <button class="help-button"><span class="icon">🤖</span> Devo incluir a palavra 'Key'?</button>
+                            <div class="help-content">
+                                <div class="response-header">
+                                    <strong>🤖 Resposta do Programador Sênior:</strong>
+                                </div>
+                                <div class="response-content">
+                                    <p><strong>Sim, 100% obrigatório.</strong></p>
+                                    [cite_start]<p>O valor que você deve colocar no campo "Value" é a palavra <code>Key</code>, seguida de um espaço, seguida da sua chave de API[cite: 115].</p>
+                                    <p>Exemplo: <code>Key k1x2y3z4-abcd-1234-efgh-567890abcdef</code></p>
+                                    <p>Isso se chama "Prefixo de Autorização". [cite_start]É como a API do Fal.ai sabe que tipo de chave você está enviando[cite: 115]. [cite_start]Outras APIs usam "Bearer", "Apikey"[cite: 131], etc.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step2.2" />
+                        <label for="step2.2"><h3>2.2. [cite_start]Upload-post.com: Distribuição em Massa [cite: 117]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Este serviço atua como um agregador para simplificar o upload[cite: 118, 119].
+                        </p>
+                        [cite_start]<p>Crie uma conta em app.upload-post.com[cite: 122].</p>
+                        <p>
+                            [cite_start]Conecte suas contas de redes sociais (ex: TikTok) na plataforma[cite: 123].
+                        </p>
+                        [cite_start]<p>Navegue até a seção de API e gere uma nova API Key[cite: 124].</p>
+                        <p>
+                            [cite_start]No n8n, crie outra credencial "Header Auth"[cite: 127].
+                        </p>
+                        [cite_start]<p>Preencha os campos[cite: 128]:</p>
+                        <ul>
+                            [cite_start]<li>Credential Name: <code>Upload-post.com API Key</code> [cite: 129]</li>
+                            [cite_start]<li>Name (Header Name): <code>Authorization</code> [cite: 130]</li>
+                            <li>
+                                [cite_start]Value (Header Value): <code>Apikey SEU_API_KEY_AQUI</code> (Note o prefixo 'Apikey')[cite: 131].
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="parte3">
+                [cite_start]<h2>Parte 3: Preparando o Palco Principal - Configurando o YouTube [cite: 133]</h2>
+                <p>
+                    [cite_start]Vamos reutilizar a mesma credencial OAuth 2.0 do Google criada na Parte 1[cite: 135].
+                </p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step3.1" />
+                        <label for="step3.1"><h3>3.1. [cite_start]Habilitando a API de Dados do YouTube v3 [cite: 136]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Volte ao seu projeto no Google Cloud Console[cite: 138].
+                        </p>
+                        <p>
+                            [cite_start]Vá em "APIs & Services" -> "Library"[cite: 139].
+                        </p>
+                        <p>
+                            [cite_start]Procure por "YouTube Data API v3" e clique em "Enable"[cite: 140, 141].
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step3.2" />
+                        <label for="step3.2"><h3>3.2. [cite_start]Conectando o n8n ao Seu Canal [cite: 145]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        [cite_start]<p>Adicione um nó "YouTube" ao seu canvas do n8n[cite: 146].</p>
+                        <p>
+                            [cite_start]No campo "Credential", selecione a credencial do Google que já criou[cite: 147].
+                        </p>
+                        <p>
+                            O n8n pode solicitar uma re-autenticação para obter as novas permissões (escopos) do
+                            [cite_start]YouTube[cite: 144]. [cite_start]Siga o processo de login novamente para conceder acesso[cite: 148].
+                        </p>
+                        <div class="helper-container">
+                            <button class="help-button"><span class="icon">🤖</span> O nó do YouTube dá erro 403 (Forbidden)!</button>
+                            <div class="help-content">
+                                <div class="response-header">
+                                    <strong>🤖 Resposta do Programador Sênior:</strong>
+                                </div>
+                                <div class="response-content">
+                                    <p>Isso acontece porque, quando você se autenticou pela primeira vez (na Parte 1), você só deu permissão ao n8n para "ver e editar Google Sheets".</p>
+                                    [cite_start]<p>Agora que você habilitou a "YouTube API" no Google Cloud [cite: 141][cite_start], você precisa se <strong>re-autenticar</strong> para que o Google possa perguntar: "Ei, você também dá permissão para o n8n gerenciar seus vídeos do YouTube?"[cite: 144].</p>
+                                    <p><strong>Solução:</strong> No n8n, edite sua credencial do Google. Você deve ver um botão para "Re-authenticate". [cite_start]Clique nele, faça o login no Google novamente e aprove as *novas* permissões do YouTube que aparecerão na tela[cite: 148].</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="parte4">
+                [cite_start]<h2>Parte 4: Montando o Quebra-Cabeça: O Fluxo Nó por Nó [cite: 150]</h2>
+                <p>
+                    [cite_start]Esta é a fase final, onde todos os componentes são montados no n8n[cite: 151].
+                </p>
+                
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step4.1" />
+                        <label for="step4.1"><h3>4.1. [cite_start]O Ponto de Partida (Schedule Trigger) [cite: 153]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Adicione um nó "Schedule Trigger" e configure o intervalo (ex: "Every Day")[cite: 155].
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step4.2" />
+                        <label for="step4.2"><h3>4.2. [cite_start]Lendo as Ideias (Google Sheets Node) [cite: 156]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        [cite_start]<p>Credential: Selecione sua credencial do Google[cite: 160].</p>
+                        [cite_start]<p>Operation: "Get Row(s)"[cite: 161].</p>
+                        [cite_start]<p>Document/Sheet: Selecione sua planilha "Conteúdo de Vídeos Automatizados"[cite: 162].</p>
+                        <p>
+                            [cite_start]Em "Options"[cite: 164]:
+                        </p>
+                        <ul>
+                            [cite_start]<li>Adicione "Limit" e defina como <code>1</code>[cite: 165].</li>
+                            <li>
+                                [cite_start]Adicione "Filter": Coluna <code>STATUS</code> "Is Empty"[cite: 166].
+                            </li>
+                        </ul>
+                         <div class="helper-container">
+                            <button class="help-button"><span class="icon">🤖</span> Por que 'Limit: 1' e 'Filter: STATUS Is Empty'?</button>
+                            <div class="help-content">
+                                <div class="response-header">
+                                    <strong>🤖 Resposta do Programador Sênior:</strong>
+                                </div>
+                                <div class="response-content">
+                                    <p>Este é o "cérebro" da sua automação, e a torna "robusta".</p>
+                                    <ul>
+                                        [cite_start]<li><strong><code>Filter: STATUS Is Empty</code></strong>: Garante que o n8n só pegue linhas que nunca foram processadas[cite: 167]. Sem isso, ele processaria o mesmo vídeo de novo e de novo.</li>
+                                        [cite_start]<li><strong><code>Limit: 1</code></strong>: Garante que o workflow processe apenas um vídeo de cada vez[cite: 165]. A geração de vídeo é lenta e cara. Você não quer iniciar 10 renderizações de vídeo ao mesmo tempo. Você quer fazer uma, terminar, e só então (na próxima execução) pegar a próxima.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step4.3" />
+                        <label for="step4.3"><h3>4.3. [cite_start]A Geração do Vídeo (HTTP Request - Fal.ai) [cite: 168]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Esta é uma chamada assíncrona; ela apenas inicia o trabalho[cite: 170].
+                        </p>
+                        [cite_start]<p>Method: "POST"[cite: 173].</p>
+                        <p>
+                            [cite_start]URL: O endpoint do modelo do Fal.ai (ex: https://queue.fal.run/fal-ai/veo3/fast)[cite: 174].
+                        </p>
+                        [cite_start]<p>Authentication: "Header Auth"[cite: 176].</p>
+                        [cite_start]<p>Credential: Selecione a "Fal.ai API Key"[cite: 177].</p>
+                        [cite_start]<p>Send Body: Ative[cite: 178]. [cite_start]Body Content Type: "JSON"[cite: 179].</p>
+                        <p>
+                            [cite_start]JSON (use "Add Expression")[cite: 180]:
+                            <code>{ "prompt": "{{ $('Get new video content').item.json.ROTEIRO }}" }</code>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step4.4" />
+                        <label for="step4.4"><h3>4.4. [cite_start]A Lógica de Espera e Verificação (Loop Assíncrono) [cite: 182]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Nó "Wait": Defina "Wait Time" para 1 minuto[cite: 186].
+                        </p>
+                        <p>
+                            [cite_start]Nó "Get status" (HTTP Request)[cite: 188]:
+                        </p>
+                        <ul>
+                            [cite_start]<li>Method: "GET"[cite: 190].</li>
+                            <li>
+                                [cite_start]URL (Expression): Use o <code>status_url</code> da saída do nó "Create Video"[cite: 191, 192].
+                            </li>
+                            [cite_start]<li>Authentication: "Fal.ai API Key"[cite: 193].</li>
+                        </ul>
+                        <p>
+                            Nó "Completed?" (IF Node) [cite_start][cite: 194]:
+                        </p>
+                        <ul>
+                            [cite_start]<li>Value 1 (Expression): <code>{{ $('Get status').item.json.status }}</code>[cite: 197].</li>
+                            [cite_start]<li>Operation: "String" -> "Equals"[cite: 198].</li>
+                            [cite_start]<li>Value 2: <code>COMPLETED</code>[cite: 199].</li>
+                        </ul>
+                        <p>
+                            [cite_start]Conecte a saída "true" do IF para o próximo passo (download)[cite: 200].
+                        </p>
+                        <p>
+                            [cite_start]Conecte a saída "false" do IF de volta ao nó "Wait"[cite: 201].
+                        </p>
+                        
+                        <div class="helper-container">
+                            <button class="help-button"><span class="icon">🤖</span> Meu workflow está preso em um loop infinito!</button>
+                            <div class="help-content">
+                                <div class="response-header">
+                                    <strong>🤖 Resposta do Programador Sênior:</strong>
+                                </div>
+                                <div class="response-content">
+                                    <p>Isso acontece quando a condição do nó "IF" nunca é "true". [cite_start]Verifique duas coisas[cite: 261]:</p>
+                                    <ol>
+                                        <li><strong>Maiúsculas/Minúsculas:</strong> A API do Fal.ai retorna <code>"COMPLETED"</code> (tudo em maiúsculas)? Ou retorna <code>"completed"</code> (minúsculas)? [cite_start]O valor no seu nó IF (Value 2) deve ser *exatamente* igual ao que a API retorna[cite: 199, 262].</li>
+                                        <li><strong>Caminho JSON Errado:</strong> Sua expressão em Value 1 está correta? [cite_start]<code>{{ $('Get status').item.json.status }}</code>[cite: 197]. Execute o nó "Get status" manualmente e olhe a saída. Onde está o status? Talvez esteja em <code>{{ $('Get status').item.json.data.status }}</code>? Você precisa apontar para o local exato.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step4.5" />
+                        <label for="step4.5"><h3>4.5. [cite_start]Obtendo o Arquivo de Vídeo (Get File - HTTP Request) [cite: 202]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Este nó fará o download do vídeo quando o status for "COMPLETED"[cite: 203].
+                        </p>
+                        [cite_start]<p>Method: "GET"[cite: 206].</p>
+                        <p>
+                            [cite_start]URL (Expression): Use o <code>response_url</code> da saída do nó "Get status"[cite: 207].
+                        </p>
+                        <p>
+                            [cite_start]<strong>Configuração Crítica:</strong> Response Format: "File"[cite: 208].
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step4.6" />
+                        <label for="step4.6"><h3>4.6. [cite_start]A Publicação Multiplataforma [cite: 210]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Nó "Upload Video" (YouTube Node)[cite: 213]:
+                        </p>
+                        <ul>
+                            [cite_start]<li>Credential: Sua credencial do Google[cite: 215].</li>
+                            [cite_start]<li>Operation: "Video" -> "Upload"[cite: 216].</li>
+                            <li>
+                                [cite_start]Input Binary Field: <code>data</code> (refere-se à saída do nó "Get File")[cite: 217].
+                            </li>
+                            [cite_start]<li>Title (Expression): <code>{{ $('Get new video content').item.json.TEMA }}</code>[cite: 218].</li>
+                            [cite_start]<li>Privacy Status: "Private" ou "Unlisted"[cite: 220].</li>
+                        </ul>
+                        <p>
+                            [cite_start]Nó "Upload on TIKTOK" (HTTP Request Node)[cite: 221]:
+                        </p>
+                        <ul>
+                            [cite_start]<li>Method: "POST", URL: https://api.upload-post.com/api/upload[cite: 223, 224].</li>
+                            [cite_start]<li>Authentication: "Header Auth", Credential: "Upload-post.com API Key"[cite: 225, 226].</li>
+                            <li>
+                                Send Body: Ative. [cite_start]Body Content Type: "Multipart/Form-Data"[cite: 227, 228].
+                            </li>
+                            <li>
+                                [cite_start]Em "Body", adicione os campos (Name, Value)[cite: 229]:
+                                <ul>
+                                    [cite_start]<li><code>title</code>, <code>{{ $('Get new video content').item.json.TEMA }}</code> [cite: 230]</li>
+                                    [cite_start]<li><code>user</code>, (Seu user do upload-post.com) [cite: 231]</li>
+                                    [cite_start]<li><code>platforms</code>, <code>tiktok</code> [cite: 232]</li>
+                                    <li>
+                                        <code>video</code>, (Use a expressão </> para selecionar a saída binária do
+                                        [cite_start]nó "Get File", geralmente <code>data</code>)[cite: 233].
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                [cite_start]No campo <code>video</code>, defina "Parameter Type" como "n8n Binary Data"[cite: 234].
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <input type="checkbox" id="step4.7" />
+                        <label for="step4.7"><h3>4.7. [cite_start]Fechando o Ciclo (Update result - Google Sheets) [cite: 235]</h3></label>
+                    </div>
+                    <div class="step-content">
+                        <p>
+                            [cite_start]Este nó marca a tarefa como concluída na planilha[cite: 236].
+                        </p>
+                        [cite_start]<p>Operation: "Update Row"[cite: 240].</p>
+                        [cite_start]<p>Key (Lookup Column): "TEMA"[cite: 242].</p>
+                        <p>
+                            [cite_start]Value (Expression): <code>{{ $('Get new video content').item.json.TEMA }}</code>[cite: 243].
+                        </p>
+                        <p>
+                            [cite_start]Columns to Update (Add Field)[cite: 244]:
+                        </p>
+                        <ul>
+                            [cite_start]<li>Column: <code>STATUS</code>, Value: <code>Completed</code> [cite: 245]</li>
+                            <li>
+                                Column: <code>VIDEO_URL</code>, Value (Expression):
+                                [cite_start]<code>https://www.youtube.com/watch?v={{ $('Upload Video').item.json.id }}</code> [cite: 246]
+                            </li>
+                            <li>
+                                Column: <code>TIKTOK_URL</code>, Value (Expression):
+                                [cite_start]<code>{{ $('Upload on TIKTOK').item.json.url }}</code> [cite: 247]
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Lógica da Navegação da Sidebar ---
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            const sections = document.querySelectorAll('.content section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const targetId = link.getAttribute('data-target');
+                    
+                    // Esconde todas as seções
+                    sections.forEach(section => {
+                        section.classList.remove('visible');
+                    });
+
+                    // Remove 'active' de todos os links
+                    navLinks.forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+
+                    // Mostra a seção alvo
+                    document.getElementById(targetId).classList.add('visible');
+                    
+                    // Adiciona 'active' ao link clicado
+                    link.classList.add('active');
+                });
+            });
+
+            // --- Lógica dos Botões de Ajuda ---
+            const helpButtons = document.querySelectorAll('.help-button');
+            helpButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const helpContent = button.nextElementSibling;
+                    const isVisible = helpContent.style.display === 'block';
+                    helpContent.style.display = isVisible ? 'none' : 'block';
+                });
+            });
+            
+            // --- Lógica da Checkbox de Passo Concluído ---
+            const checkboxes = document.querySelectorAll('.step input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const stepDiv = e.target.closest('.step');
+                    if (e.target.checked) {
+                        stepDiv.classList.add('completed');
+                    } else {
+                        stepDiv.classList.remove('completed');
+                    }
+                });
+            });
+        });
+    </script>
+    </body>
+</html>
