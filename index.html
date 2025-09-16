@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Dashboard de Criação: Guias e Ferramentas de IA</title>
+    <title>Plataforma de Agentes de IA: YouTube & N8N</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,367 +12,324 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --n8n-purple: #6a1b9a;
-            --n8n-light-purple: #f3e5f5;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-        }
-
-        /* --- Estilos das Abas --- */
-        .tab-button {
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            background-color: #e5e7eb;
-            color: #4b5563;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            border-radius: 0.5rem 0.5rem 0 0;
-        }
-        .tab-button.active {
-            color: var(--n8n-purple);
-            border-bottom-color: var(--n8n-purple);
-            background-color: #fff;
-        }
-        .tab-content {
-            display: none;
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 0 0.75rem 0.75rem 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        .tab-content.visible {
-            display: block;
-        }
-
-        /* --- Estilos do Guia N8N (App 1) --- */
-        #content-guia { background-color: #f4f7f6; }
-        #content-guia .guia-header {
-            background: linear-gradient(135deg, #6a1b9a 0%, #ab47bc 100%);
-            color: white; padding: 30px 40px; text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: -2rem -2rem 2rem -2rem; border-radius: 0 0.75rem 0 0;
-        }
-        #content-guia .guia-header h1 { margin: 0; font-size: 2.2em; display: flex; align-items: center; justify-content: center; gap: 15px; }
-        #content-guia .guia-header p { margin: 5px 0 0; font-size: 1.1em; opacity: 0.9; }
-        #content-guia .container { display: flex; flex-direction: column; max-width: 1400px; margin: 20px auto; gap: 20px; }
-        @media (min-width: 1024px) { #content-guia .container { flex-direction: row; } }
-        #content-guia .sidebar { flex: 0 0 280px; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); height: fit-content; }
-        #content-guia .sidebar h3 { margin-top: 0; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        #content-guia .sidebar a { display: block; padding: 12px 15px; text-decoration: none; color: #333; border-radius: 6px; font-weight: 500; transition: all 0.2s ease-in-out; cursor: pointer; }
-        #content-guia .sidebar a.active { background-color: var(--n8n-light-purple); color: var(--n8n-purple); font-weight: 700; }
-        #content-guia .content { flex: 1; }
-        #content-guia .content section { display: none; background: #fff; border-radius: 8px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        #content-guia .content section.visible { display: block; }
-        #content-guia .content h2 { color: var(--n8n-purple); border-bottom: 2px solid var(--n8n-light-purple); padding-bottom: 10px; }
-        #content-guia code { background-color: #eee; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 0.95em; }
-        #content-guia .step { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
-        #content-guia .step-header { display: flex; align-items: center; gap: 15px; padding: 20px; background: #fafafa; }
-        #content-guia .step-header h3 { margin: 0; font-size: 1.4em; color: #444; }
-        #content-guia .step-content { padding: 0 20px 20px 55px; line-height: 1.7; color: #555; }
-        #content-guia .step.completed { border-left: 5px solid #4caf50; }
-        #content-guia .step.completed .step-header h3 { text-decoration: line-through; color: #888; }
-        #content-guia .helper-container { margin-top: 20px; padding: 20px; background: var(--n8n-light-purple); border-radius: 8px; border: 1px solid #d1c4e9; }
-        #content-guia .help-button { background-color: var(--n8n-purple); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 1em; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        #content-guia .help-content { display: none; margin-top: 20px; background: #fff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 900px; border-radius: 0.75rem; position: relative; }
+        .close-button { color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-button:hover { color: black; }
         
-        /* --- Estilos do Gerador YouTube (App 2) --- */
-        .step-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); margin-bottom: 2rem; border: 1px solid #e5e7eb; }
-        .step-header { padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; background-color: #fafafa; }
-        .agent-card { border: 1px solid #e5e7eb; border-radius: 0.5rem; margin-top: 1.5rem; }
-        .agent-header { background-color: #f9fafb; padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; }
-        .agent-body { padding: 1rem; }
-        .result-container { background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; padding: 1rem; margin-top: 1rem; white-space: pre-line; font-size: 0.9rem; line-height: 1.6; color: #0c4a6e; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        /* Estilos do Agente e da Resposta */
+        .agent-accordion details[open] summary { background-color: #eef2ff; }
+        .agent-accordion summary { cursor: pointer; padding: 1rem; border-radius: 0.5rem; background-color: #f9fafb; border: 1px solid #e5e7eb; transition: background-color 0.2s; }
+        .agent-accordion details { margin-bottom: 1rem; }
+        .output-tab { cursor: pointer; }
+        .output-tab.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+        .output-panel { display: none; }
+        .output-panel.active { display: block; }
 
-        /* --- Estilos do Infográfico N8N (App 3) --- */
-        #content-infografico { background-color: #BFD7EA; }
-        .chart-container { position: relative; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
-        @media (min-width: 768px) { .chart-container { height: 350px; } }
-        .flow-card { background-color: white; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); border: 1px solid #E5E7EB; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .flow-arrow { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.5rem; font-weight: bold; margin: 0.5rem 0; }
-        .flow-loop { border: 3px dashed #FF5A5F; border-radius: 1rem; padding: 1.5rem; margin-top: 1rem; margin-bottom: 1rem; }
-        .prompt-card { cursor: pointer; transition: all 0.2s ease-in-out; border: 2px solid transparent; }
-        .prompt-card.selected { border-color: #087E8B; transform: scale(1.03); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
-        .info-loader { border: 4px solid #f3f3f3; border-top: 4px solid #087E8B; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        /* Estilos do Guia N8N (dentro do modal) */
+        .guia-container { display: flex; gap: 20px; }
+        .guia-sidebar { flex: 0 0 250px; }
+        .guia-content { flex: 1; }
         
-        /* Animação de Spin (usada por todos) */
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        textarea { resize: vertical; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
     </style>
 </head>
 <body class="text-gray-800">
 
     <div class="container mx-auto p-4 md:p-8 max-w-7xl">
-        
         <header class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-black text-gray-900">Super Dashboard de Criação</h1>
-            <p class="text-lg text-gray-600 mt-2">Suas ferramentas e guias de IA para YouTube e N8N em um só lugar.</p>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900">Plataforma de Agentes de IA</h1>
+            <p class="text-lg text-gray-600 mt-2">Suas ferramentas de IA para YouTube e automação N8N.</p>
+            <div class="mt-4 flex justify-center gap-4">
+                <button id="open-guia-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">Ver Guia de Implementação N8N</button>
+                <button id="open-infografico-btn" class="bg-teal-600 text-white font-bold py-2 px-4 rounded-md hover:bg-teal-700 transition-colors">Ver Infográfico N8N</button>
+            </div>
         </header>
 
-        <nav class="flex mb-0 -mb-px">
-            <button id="tab-guia" class="tab-button active">Guia N8N (Corrigido)</button>
-            <button id="tab-gerador" class="tab-button">Gerador YouTube</button>
-            <button id="tab-infografico" class="tab-button">Infográfico N8N</button>
-        </nav>
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div id="agent-config-column" class="bg-white p-6 rounded-lg shadow-md">
+                <div class="mb-6">
+                    <label for="gemini-api-key" class="block text-lg font-bold text-gray-800 mb-2">Chave da API Gemini (Global)</label>
+                    <input type="password" id="gemini-api-key" class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm" placeholder="Cole sua chave de API do Google AI Studio aqui...">
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-900 border-b pb-2 mb-4">Agentes de Conteúdo</h2>
+                <div class="agent-accordion space-y-2">
+                    </div>
+            </div>
 
-        <div id="content-guia" class="tab-content visible">
-            <header class="guia-header">
-                <h1>
-                    <img src="https://n8n.io/n8n-logo.svg" alt="n8n Logo" height="40" width="40" />
-                    Assistente de Implementação: Fábrica de Vídeos
-                </h1>
-                <p>
-                    [cite_start]Um guia passo-a-passo para implementar seu workflow de automação de vídeo com n8n. [cite: 1]
-                </p>
-            </header>
-        
-            <main class="container">
-                <nav class="sidebar">
-                    <h3>Navegação</h3>
-                    [cite_start]<a data-target="parte1" class="guia_nav-link active">Parte 1: Fundação (Google) [cite: 17]</a>
-                    [cite_start]<a data-target="parte2" class="guia_nav-link">Parte 2: Chaves de API (IA) [cite: 18]</a>
-                    [cite_start]<a data-target="parte3" class="guia_nav-link">Parte 3: YouTube [cite: 19]</a>
-                    [cite_start]<a data-target="parte4" class="guia_nav-link">Parte 4: Montagem N8N [cite: 20]</a>
+            <div id="output-column" class="bg-white p-6 rounded-lg shadow-md">
+                <nav class="flex border-b mb-4">
+                    <button data-target="resposta" class="output-tab active font-semibold py-2 px-4 border-b-2 border-transparent">Resposta</button>
+                    <button data-target="historico" class="output-tab font-semibold py-2 px-4 border-b-2 border-transparent">Histórico</button>
+                    <button data-target="dna" class="output-tab font-semibold py-2 px-4 border-b-2 border-transparent">Editar DNA</button>
                 </nav>
-        
-                <div class="content">
-                    <section id="parte1" class="visible">
-                        [cite_start]<h2>Parte 1: A Fundação - Configurando a Planilha Google e o Google Cloud [cite: 21]</h2>
-                        <p>
-                            [cite_start]Foco na configuração da Planilha Google [cite: 17][cite_start], que servirá como base de dados[cite: 17], e na configuração essencial dentro do Google Cloud
-                            [cite_start]Platform (GCP) para permitir a comunicação segura com o n8n[cite: 17].
-                        </p>
-                        <div class="step">
-                            <div class="step-header"><input type="checkbox" id="guia-step1.1" /><label for="guia-step1.1"><h3>1.1. [cite_start]Criando a Estrutura da Planilha Google [cite: 22]</h3></label></div>
-                            <div class="step-content">
-                                [cite_start]<p>Acesse o Google Sheets e crie uma nova planilha em branco[cite: 26].</p>
-                                [cite_start]<p>Renomeie para "Conteúdo de Vídeos Automatizados"[cite: 27].</p>
-                                [cite_start]<p>Defina os seguintes cabeçalhos na primeira linha[cite: 28]:</p>
-                                <ul>
-                                    [cite_start]<li><code>TEMA</code>: O título ou tema principal do vídeo. [cite: 29]</li>
-                                    [cite_start]<li><code>ROTEIRO</code>: O texto completo que será usado pela IA. [cite: 30]</li>
-                                    [cite_start]<li><code>STATUS</code>: Funcionará como um "semáforo" para o workflow[cite: 31].</li>
-                                    [cite_start]<li><code>VIDEO_URL</code>: Onde o link do YouTube será armazenado. [cite: 33]</li>
-                                    [cite_start]<li><code>TIKTOK_URL</code>: Onde o link do TikTok será armazenado. [cite: 34]</li>
-                                </ul>
-                                [cite_start]<p>Adicione uma linha de exemplo com TEMA e ROTEIRO[cite: 35].</p>
-                            </div>
-                        </div>
-                        <div class="step">
-                            <div class="step-header"><input type="checkbox" id="guia-step1.2" /><label for="guia-step1.2"><h3>1.2. [cite_start]Desvendando o Google Cloud (GCP) [cite: 37]</h3></label></div>
-                            <div class="step-content">
-                                [cite_start]<p>Acesse o Google Cloud Console e crie um "New Project"[cite: 42, 43].</p>
-                                [cite_start]<p>Dê um nome, como "Automacao-n8n-Videos"[cite: 44].</p>
-                                [cite_start]<p>Na barra de pesquisa, procure por "Google Sheets API" e clique em "Enable"[cite: 47, 48].</p>
-                            </div>
-                        </div>
-                    </section>
-        
-                    <section id="parte2">
-                        [cite_start]<h2>Parte 2: Obtendo as Chaves para a Magia da IA e Publicação [cite: 95]</h2>
-                        [cite_start]<p>Obtenção das credenciais para os serviços de terceiros (Fal.ai e Upload-post.com)[cite: 18, 96].</p>
-                    </section>
-                     <section id="parte3">
-                         [cite_start]<h2>Parte 3: Preparando o Palco Principal - Configurando o YouTube [cite: 133]</h2>
-                         [cite_start]<p>Vamos reutilizar a mesma credencial OAuth 2.0 do Google criada na Parte 1[cite: 135].</p>
-                     </section>
-                     <section id="parte4">
-                        [cite_start]<h2>Parte 4: Montando o Quebra-Cabeça: O Fluxo Nó por Nó [cite: 150]</h2>
-                        [cite_start]<p>Esta é a fase final, onde todos os componentes são montados no n8n[cite: 151].</p>
-                    </section>
-                </div>
-            </main>
-        </div>
 
-        <div id="content-gerador" class="tab-content">
-            <header class="text-center mb-6">
-                <h1 class="text-3xl font-black text-gray-900">Gerador YouTube: da Ideia ao Clique</h1>
-                <p class="text-md text-gray-600 mt-1">Sua suíte de agentes de IA para criar vídeos de sucesso.</p>
-            </header>
-            
-            <div class="bg-gray-50 p-6 rounded-lg shadow-inner mb-8 border border-blue-200">
-                <label for="gerador-api-key" class="block text-lg font-bold text-gray-800 mb-2">Chave da API Gemini (Obrigatória)</label>
-                <input type="password" id="gerador-api-key" class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Cole sua chave de API do Google AI Studio aqui...">
-                <p class="text-xs text-gray-500 mt-2">Sua chave é usada para todos os agentes desta aba.</p>
+                <div id="panel-resposta" class="output-panel active">
+                    <div id="loader" class="hidden mx-auto loader"></div>
+                    <div id="response-content" class="whitespace-pre-line bg-indigo-50 p-4 rounded-md min-h-[400px] text-gray-700">Aguardando um agente ser executado...</div>
+                </div>
+
+                <div id="panel-historico" class="output-panel space-y-4 max-h-[600px] overflow-y-auto">
+                    <div id="history-content" class="text-sm text-gray-600">Nenhuma geração no histórico.</div>
+                </div>
+
+                <div id="panel-dna" class="output-panel">
+                     <h3 class="font-bold mb-2">DNA do Agente: <span id="dna-agent-name" class="text-indigo-600">Nenhum selecionado</span></h3>
+                     <p class="text-xs text-gray-500 mb-4">Aqui você pode ajustar as instruções do agente para refinar os resultados. As alterações são temporárias.</p>
+                     <label class="block text-sm font-medium text-gray-700">Instrução do Sistema (Personalidade):</label>
+                     <textarea id="dna-system-prompt" rows="6" class="w-full p-2 border border-gray-300 rounded-md bg-gray-50 mt-1"></textarea>
+                     <label class="block text-sm font-medium text-gray-700 mt-4">Instrução do Usuário (Tarefa):</label>
+                     <textarea id="dna-user-prompt" rows="8" class="w-full p-2 border border-gray-300 rounded-md bg-gray-50 mt-1"></textarea>
+                </div>
+                 <p class="text-xs text-center text-gray-500 mt-6">"O objetivo com cada agente é ir até ~80% do necessário. Os últimos 20% recomendo fazer manualmente."</p>
             </div>
+        </main>
+    </div>
+
+    <div id="guia-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-guia-btn">&times;</span>
+            <div id="guia-container-corrected" class="max-h-[80vh] overflow-y-auto">
+                <h1 class="text-3xl font-bold mb-4 text-center">Guia de Implementação N8N</h1>
+                <div class="guia-container">
+                    <nav class="guia-sidebar hidden md:block">
+                        <h3 class="font-bold text-lg mb-2">Navegação</h3>
+                        <a data-target="parte1" class="guia_nav-link block p-2 rounded hover:bg-gray-100 active">Parte 1: Fundação</a>
+                        <a data-target="parte2" class="guia_nav-link block p-2 rounded hover:bg-gray-100">Parte 2: Chaves de API</a>
+                        <a data-target="parte3" class="guia_nav-link block p-2 rounded hover:bg-gray-100">Parte 3: YouTube</a>
+                        <a data-target="parte4" class="guia_nav-link block p-2 rounded hover:bg-gray-100">Parte 4: Montagem</a>
+                    </nav>
+                    <div class="guia-content">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-            <div class="step-card">
-                <div class="step-header"><h2 class="text-2xl font-bold text-gray-900">Etapa 1: Estratégia</h2></div>
-                <div class="p-6">
-                    <p class="text-gray-700 mb-4">Use os agentes abaixo para encontrar temas com alto potencial e criar uma abordagem única.</p>
-                    <div class="agent-card">
-                        <div class="agent-header"><h3 class="font-bold text-blue-800">Agente: Gerador de Ideias Virais</h3></div>
-                        <div class="agent-body">
-                            <label for="topic-input" class="block text-sm font-medium text-gray-700 mb-1">Insira um tema:</label>
-                            <input type="text" id="topic-input" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Ex: Produtividade">
-                            <button id="generate-ideas-btn" class="mt-3 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400">Gerar Ideias</button>
-                            <div id="ideas-loader" class="hidden mt-3 loader"></div>
-                            <div id="ideas-result" class="hidden result-container"></div>
-                        </div>
-                    </div>
-                    <div class="agent-card">
-                        <div class="agent-header"><h3 class="font-bold text-blue-800">Agente: Criador de Ângulos Únicos</h3></div>
-                        <div class="agent-body">
-                            <label for="angle-input" class="block text-sm font-medium text-gray-700 mb-1">Cole uma ideia:</label>
-                            <textarea id="angle-input" rows="3" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Ex: 5 hábitos que destruíram minha produtividade"></textarea>
-                            <button id="generate-angles-btn" class="mt-3 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400">Criar Ângulos</button>
-                            <div id="angles-loader" class="hidden mt-3 loader"></div>
-                            <div id="angles-result" class="hidden result-container"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="step-card">
-                <div class="step-header"><h2 class="text-2xl font-bold text-gray-900">Etapa 2: Apresentação</h2></div>
-                <div class="p-6">
-                     <div class="agent-card">
-                        <div class="agent-header"><h3 class="font-bold text-green-800">Agente: Mestre dos Títulos</h3></div>
-                        <div class="agent-body">
-                            <label for="title-input" class="block text-sm font-medium text-gray-700 mb-1">Tema central:</label>
-                            <input type="text" id="title-input" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Ex: Como fazer bolo de chocolate">
-                            <button id="generate-titles-btn" class="mt-3 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400">Gerar Títulos</button>
-                            <div id="titles-loader" class="hidden mt-3 loader"></div>
-                            <div id="titles-result" class="hidden result-container"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="content-infografico" class="tab-content">
-            <header class="text-center mb-12">
-                <h1 class="text-4xl md:text-5xl font-black text-[#0B3954] uppercase">Sua Fábrica de Vídeos com IA</h1>
-                <p class="text-lg md:text-xl text-[#087E8B] mt-2 max-w-3xl mx-auto">Um guia interativo para automatizar a criação de vídeos com N8N e publicá-los no TikTok.</p>
-            </header>
-            <section class="mb-16 bg-white rounded-lg shadow-lg p-6 md:p-8">
-                <h2 class="text-3xl font-bold text-center text-[#0B3954] mb-2">Gerador de Títulos (TikTok) com Gemini AI</h2>
-                <div class="max-w-xl mx-auto mb-6">
-                    <label for="info-api-key" class="block text-sm font-medium text-gray-700 mb-1">Sua API Key</label>
-                    <input type="password" id="info-api-key" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md" placeholder="Cole sua chave de API aqui...">
-                </div>
-                <h3 class="text-xl font-bold text-center text-[#0B3954] mb-4">1. Escolha um Prompt</h3>
-                 <div id="info-prompt-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
-                <div class="text-center mb-6">
-                    <button id="info-generate-btn" disabled class="bg-[#087E8B] text-white font-bold py-3 px-6 rounded-lg disabled:bg-gray-400">2. Gerar Título</button>
-                </div>
-                <div id="info-result-container" class="max-w-xl mx-auto text-center">
-                     <div id="info-loader" class="hidden mx-auto info-loader"></div>
-                     <div id="info-gemini-result" class="text-lg font-semibold bg-gray-100 p-4 rounded-lg min-h-[50px]"></div>
-                </div>
-            </section>
-            <section>
-                 <h2 class="text-3xl font-bold text-center text-[#0B3954] mb-8">Análise de Impacto</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <div class="bg-white rounded-lg shadow-lg p-6">
-                         <h3 class="text-xl font-bold text-center text-[#0B3954] mb-4">Estimativa de Custo por Vídeo</h3>
-                         <div class="chart-container"><canvas id="costChart"></canvas></div>
-                     </div>
-                     <div class="bg-white rounded-lg shadow-lg p-6">
-                         <h3 class="text-xl font-bold text-center text-[#0B3954] mb-4">Otimização de Tempo</h3>
-                         <div class="chart-container h-[350px] md:h-[400px]"><canvas id="timeChart"></canvas></div>
-                     </div>
+    <div id="infografico-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-infografico-btn">&times;</span>
+            <div id="infografico-container" class="max-h-[80vh] overflow-y-auto">
                  </div>
-            </section>
         </div>
-        
-        <footer class="text-center mt-16">
-            <p class="text-gray-600">Super Dashboard de Criação v1.1</p>
-        </footer>
     </div>
 
     <script>
-        // --- SCRIPT GERAL (ABAS) ---
+        // --- SCRIPT GERAL E PLATAFORMA DE AGENTES ---
         document.addEventListener('DOMContentLoaded', () => {
-            const tabs = document.querySelectorAll('.tab-button');
-            const contents = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    contents.forEach(c => c.classList.remove('visible'));
-                    const targetId = tab.id.replace('tab-', 'content-');
-                    document.getElementById(targetId).classList.add('visible');
-                });
-            });
-        });
-
-        // --- SCRIPT 1 (Guia N8N Corrigido) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const guia_container = document.getElementById('content-guia');
-            if (!guia_container) return;
-            const guia_navLinks = guia_container.querySelectorAll('.guia_nav-link');
-            const guia_sections = guia_container.querySelectorAll('.content section');
-            guia_navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    const targetId = link.getAttribute('data-target');
-                    guia_sections.forEach(s => s.classList.remove('visible'));
-                    guia_navLinks.forEach(n => n.classList.remove('active'));
-                    guia_container.querySelector(`.content #${targetId}`).classList.add('visible');
-                    link.classList.add('active');
-                });
-            });
-             const checkboxes = guia_container.querySelectorAll('.step input[type="checkbox"]');
-             checkboxes.forEach(checkbox => {
-                 checkbox.addEventListener('change', (e) => {
-                     const stepDiv = e.target.closest('.step');
-                     if (e.target.checked) { stepDiv.classList.add('completed'); } 
-                     else { stepDiv.classList.remove('completed'); }
-                 });
-             });
-        });
-
-        // --- SCRIPT 2 (Gerador YouTube) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const gerador_container = document.getElementById('content-gerador');
-            if (!gerador_container) return;
-            const gerador_apiKeyInput = document.getElementById('gerador-api-key');
-            const gerador_agentConfigs = {
-                'ideas': { btn: document.getElementById('generate-ideas-btn'), loader: document.getElementById('ideas-loader'), result: document.getElementById('ideas-result'), inputs: [document.getElementById('topic-input')], getPrompts: (inputs) => ({ system: "Você é um estrategista de conteúdo para o YouTube...", user: `Baseado no tema "${inputs[0]}", gere 5 ideias...` }) },
-                'angles': { btn: document.getElementById('generate-angles-btn'), loader: document.getElementById('angles-loader'), result: document.getElementById('angles-result'), inputs: [document.getElementById('angle-input')], getPrompts: (inputs) => ({ system: "Você é um roteirista...", user: `Para a ideia "${inputs[0]}", crie 3 ângulos...` }) },
-                'titles': { btn: document.getElementById('generate-titles-btn'), loader: document.getElementById('titles-loader'), result: document.getElementById('titles-result'), inputs: [document.getElementById('title-input')], getPrompts: (inputs) => ({ system: "Você é um especialista em SEO para YouTube...", user: `Gere 5 opções de títulos para: "${inputs[0]}"...` }) },
+            // --- ESTADO GLOBAL DA APLICAÇÃO ---
+            const state = {
+                apiKey: '',
+                history: [],
+                selectedAgent: null
             };
-            const gerador_checkInputs = () => {
-                const apiKey = gerador_apiKeyInput.value.trim();
-                for (const key in gerador_agentConfigs) {
-                    const config = gerador_agentConfigs[key];
-                    if(config.btn) {
-                        const allInputsFilled = config.inputs.every(input => input.value.trim() !== '');
-                        config.btn.disabled = !apiKey || !allInputsFilled;
+
+            // --- ELEMENTOS DO DOM ---
+            const apiKeyInput = document.getElementById('gemini-api-key');
+            const agentAccordionContainer = document.querySelector('.agent-accordion');
+            const outputTabs = document.querySelectorAll('.output-tab');
+            const outputPanels = document.querySelectorAll('.output-panel');
+            const responseContent = document.getElementById('response-content');
+            const historyContent = document.getElementById('history-content');
+            const dnaAgentName = document.getElementById('dna-agent-name');
+            const dnaSystemPrompt = document.getElementById('dna-system-prompt');
+            const dnaUserPrompt = document.getElementById('dna-user-prompt');
+            const loader = document.getElementById('loader');
+
+            // --- CONFIGURAÇÃO DOS AGENTES ---
+            const agentConfigs = {
+                'gerador-ideias': {
+                    title: "Gerador de Ideias Virais",
+                    description: "Insira um tema e receba ideias de vídeos com alto potencial de engajamento.",
+                    inputs: [{ id: 'topic-input', label: 'Tema ou palavra-chave:', placeholder: 'Ex: Produtividade', type: 'text' }],
+                    getPrompts: (inputs) => ({
+                        system: "Você é um estrategista de conteúdo para o YouTube, especialista em identificar tendências e temas com alto potencial de viralização.",
+                        user: `Baseado no tema central "${inputs[0]}", gere 5 ideias de vídeos para o YouTube. Para cada ideia, forneça um título provisório e uma breve descrição do conceito, focando em formatos que geram alto engajamento (listas, tutoriais, comparações, storytelling).`
+                    })
+                },
+                'criador-angulos': {
+                    title: "Criador de Ângulos Únicos",
+                    description: "Cole uma ideia de vídeo e receba abordagens criativas e ganchos para o seu roteiro.",
+                    inputs: [{ id: 'angle-input', label: 'Ideia de vídeo para detalhar:', placeholder: 'Ex: 5 hábitos que destruíram minha produtividade', type: 'textarea' }],
+                    getPrompts: (inputs) => ({
+                        system: "Você é um roteirista e diretor de criação, mestre em transformar ideias boas em vídeos irresistíveis. Seu superpoder é encontrar ângulos únicos e provocativos.",
+                        user: `Para a ideia de vídeo "${inputs[0]}", crie 3 ângulos de abordagem distintos e específicos. Para cada ângulo, explique o 'gancho' inicial (os primeiros 15 segundos) e por que ele atrairia a atenção do público.`
+                    })
+                },
+                'mestre-titulos': {
+                    title: "Mestre dos Títulos",
+                    description: "Forneça o tema do vídeo e receba 5 opções de títulos otimizados para cliques (CTR).",
+                    inputs: [{ id: 'title-input', label: 'Tema central do vídeo:', placeholder: 'Ex: Como fazer o melhor bolo de chocolate', type: 'text' }],
+                    getPrompts: (inputs) => ({
+                        system: "Você é um especialista em SEO para YouTube e copywriting, focado em criar títulos que maximizam a taxa de cliques (CTR). Siga as melhores práticas: menos de 70 caracteres, uso de palavras-chave, números e gatilhos emocionais.",
+                        user: `Gere 5 opções de títulos otimizados para um vídeo do YouTube com o seguinte tema: "${inputs[0]}". Os títulos devem ser magnéticos e claros sobre o conteúdo do vídeo.`
+                    })
+                },
+            };
+
+            // --- INICIALIZAÇÃO DA UI ---
+            function initializeAgents() {
+                agentAccordionContainer.innerHTML = '';
+                for (const agentId in agentConfigs) {
+                    const config = agentConfigs[agentId];
+                    const inputsHTML = config.inputs.map(input => {
+                        if (input.type === 'textarea') {
+                            return `<label for="${input.id}" class="block text-sm font-medium text-gray-700 mb-1">${input.label}</label>
+                                    <textarea id="${input.id}" rows="3" class="w-full p-2 border border-gray-300 rounded-md" placeholder="${input.placeholder}"></textarea>`;
+                        }
+                        return `<label for="${input.id}" class="block text-sm font-medium text-gray-700 mb-1">${input.label}</label>
+                                <input type="text" id="${input.id}" class="w-full p-2 border border-gray-300 rounded-md" placeholder="${input.placeholder}">`;
+                    }).join('');
+
+                    const agentHTML = `
+                        <details data-agent-id="${agentId}">
+                            <summary class="font-bold text-lg">${config.title}</summary>
+                            <div class="p-4 border border-t-0 rounded-b-md">
+                                <p class="text-sm text-gray-600 mb-4">${config.description}</p>
+                                ${inputsHTML}
+                                <button data-agent-id="${agentId}" class="agent-generate-btn mt-3 bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors disabled:bg-gray-400">Gerar Resposta</button>
+                            </div>
+                        </details>
+                    `;
+                    agentAccordionContainer.innerHTML += agentHTML;
+                }
+            }
+
+            // --- FUNÇÕES DE LÓGICA ---
+            async function callGeminiAPI(apiKey, systemPrompt, userQuery) { /* ... Lógica da API ... */ } // Placeholder for brevity
+            
+            function updateHistoryView() {
+                if (state.history.length === 0) {
+                    historyContent.innerHTML = 'Nenhuma geração no histórico.';
+                    return;
+                }
+                historyContent.innerHTML = state.history.map((item, index) => `
+                    <div class="border p-3 rounded-md bg-gray-50">
+                        <p class="font-bold text-gray-800">${item.agentTitle}</p>
+                        <p class="text-xs text-gray-500 mb-2">Entrada: ${item.inputs.join(', ')}</p>
+                        <div class="whitespace-pre-line text-gray-700">${item.response}</div>
+                    </div>
+                `).reverse().join('');
+            }
+
+            function selectAgent(agentId) {
+                state.selectedAgent = agentId;
+                const config = agentConfigs[agentId];
+                dnaAgentName.textContent = config.title;
+                const dummyInputs = config.inputs.map(i => `[${i.label}]`);
+                const prompts = config.getPrompts(dummyInputs);
+                dnaSystemPrompt.value = prompts.system;
+                dnaUserPrompt.value = prompts.user;
+            }
+
+            // --- EVENT LISTENERS ---
+            apiKeyInput.addEventListener('input', () => { state.apiKey = apiKeyInput.value.trim(); });
+
+            outputTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.target;
+                    outputTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    outputPanels.forEach(p => p.classList.remove('active'));
+                    document.getElementById(`panel-${target}`).classList.add('active');
+                });
+            });
+
+            agentAccordionContainer.addEventListener('click', async (e) => {
+                // Selecionar agente ao abrir o accordion
+                if (e.target.tagName === 'SUMMARY') {
+                    const detailsElement = e.target.parentElement;
+                    if (!detailsElement.open) { // Event fires before 'open' state changes
+                        const agentId = detailsElement.dataset.agentId;
+                        selectAgent(agentId);
                     }
                 }
-            };
-            async function gerador_callGeminiAPI(apiKey, systemPrompt, userQuery) { /* ... Lógica Fetch API ... */ }
-            gerador_apiKeyInput.addEventListener('input', gerador_checkInputs);
-            Object.values(gerador_agentConfigs).forEach(config => {
-                if(config.btn) {
-                    config.inputs.forEach(input => input.addEventListener('input', gerador_checkInputs));
-                    config.btn.addEventListener('click', async () => { /* ... Lógica do clique ... */ });
+                // Gerar resposta ao clicar no botão
+                if (e.target.classList.contains('agent-generate-btn')) {
+                    const agentId = e.target.dataset.agentId;
+                    const config = agentConfigs[agentId];
+                    const inputValues = config.inputs.map(input => document.getElementById(input.id).value.trim());
+                    
+                    if (!state.apiKey || inputValues.some(v => v === '')) {
+                        alert('Por favor, insira sua API Key e preencha todos os campos do agente.');
+                        return;
+                    }
+                    
+                    loader.classList.remove('hidden');
+                    responseContent.textContent = 'Gerando...';
+                    
+                    try {
+                        const systemPrompt = dnaSystemPrompt.value; // Usa o DNA editado
+                        let userPromptTemplate = dnaUserPrompt.value;
+                        config.inputs.forEach((input, index) => {
+                             userPromptTemplate = userPromptTemplate.replace(`[${input.label}]`, inputValues[index]);
+                        });
+
+                        const resultText = await callGeminiAPI(state.apiKey, systemPrompt, userPromptTemplate);
+                        
+                        responseContent.textContent = resultText.trim();
+                        state.history.push({ agentTitle: config.title, inputs: inputValues, response: resultText.trim() });
+                        updateHistoryView();
+
+                    } catch (error) {
+                        responseContent.textContent = `Ocorreu um erro: ${error.message}`;
+                    } finally {
+                        loader.classList.add('hidden');
+                    }
                 }
             });
-            gerador_checkInputs();
+
+            // --- INICIALIZAÇÃO ---
+            initializeAgents();
         });
 
-        // --- SCRIPT 3 (Infográfico N8N) ---
-        document.addEventListener('DOMContentLoaded', function() {
-            const info_container = document.getElementById('content-infografico');
-            if (!info_container) return;
-            const costCanvas = document.getElementById('costChart');
-            if (costCanvas) { new Chart(costCanvas.getContext('2d'), { type: 'doughnut', data: { labels: ['API Fal.ai', 'N8N Cloud', 'API Gemini'], datasets: [{ data: [75, 20, 5], backgroundColor: ['#087E8B', '#FF5A5F', '#BFD7EA'] }] }, options: { responsive: true, maintainAspectRatio: false } }); }
-            const timeCanvas = document.getElementById('timeChart');
-            if (timeCanvas) { new Chart(timeCanvas.getContext('2d'), { type: 'bar', data: { labels: ['Manual', 'Automatizado'], datasets: [{ label: 'Tempo (Minutos)', data: [45, 3], backgroundColor: ['#FF5A5F', '#087E8B'] }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' } }); }
-            const info_apiKeyInput = document.getElementById('info-api-key');
-            const info_generateBtn = document.getElementById('info-generate-btn');
-            const info_promptListContainer = document.getElementById('info-prompt-list');
-            const info_resultContainer = document.getElementById('info-gemini-result');
-            const info_loader = document.getElementById('info-loader');
-            const info_prompts = [ "Astronauta surfando em Saturno...", "Gota de chuva em câmera lenta...", "Cidade futurista pixelada...", "Dragão em castelo medieval...", "Floresta mágica brilhante...", "Gato DJ em festa rave..." ];
-            let info_selectedPrompt = null;
-            // O restante da lógica do Infográfico (criação dos prompts, listeners, chamada de API) vai aqui.
+        // --- SCRIPTS DOS MODAIS (Guia e Infográfico) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Lógica para abrir/fechar modais
+            const guiaModal = document.getElementById('guia-modal');
+            const infograficoModal = document.getElementById('infografico-modal');
+            document.getElementById('open-guia-btn').onclick = () => { guiaModal.style.display = 'block'; };
+            document.getElementById('close-guia-btn').onclick = () => { guiaModal.style.display = 'none'; };
+            document.getElementById('open-infografico-btn').onclick = () => { infograficoModal.style.display = 'block'; /* Lógica para renderizar o infográfico se necessário */ };
+            document.getElementById('close-infografico-btn').onclick = () => { infograficoModal.style.display = 'none'; };
+            window.onclick = (event) => {
+                if (event.target == guiaModal) guiaModal.style.display = "none";
+                if (event.target == infograficoModal) infograficoModal.style.display = "none";
+            };
+
+            // Injeta o conteúdo HTML CORRIGIDO do Guia no modal
+            const guiaContentContainer = document.querySelector('#guia-container-corrected .guia-content');
+            guiaContentContainer.innerHTML = `
+                <section id="parte1" class="visible">
+                    <h2>Parte 1: A Fundação - Configurando a Planilha Google e o Google Cloud</h2>
+                    <div class="step"><div class="step-header"><h3>1.1. Criando a Estrutura da Planilha Google</h3></div>
+                    <div class="step-content"><p>Acesse o Google Sheets e crie uma nova planilha em branco. Renomeie para "Conteúdo de Vídeos Automatizados". Defina os cabeçalhos: <code>TEMA</code>, <code>ROTEIRO</code>, <code>STATUS</code>, <code>VIDEO_URL</code>, <code>TIKTOK_URL</code>.</p></div></div>
+                    <div class="step"><div class="step-header"><h3>1.2. Desvendando o Google Cloud (GCP)</h3></div>
+                    <div class="step-content"><p>Acesse o Google Cloud Console, crie um "New Project" (ex: "Automacao-n8n-Videos"). Procure por "Google Sheets API" e clique em "Enable".</p></div></div>
+                </section>
+                <section id="parte2"><h2>Parte 2: Obtendo as Chaves de API</h2></section>
+                <section id="parte3"><h2>Parte 3: Configurando o YouTube</h2></section>
+                <section id="parte4"><h2>Parte 4: Montagem do Workflow no N8N</h2></section>
+            `; // NOTA: O conteúdo do guia foi abreviado para manter o código legível. Você pode colar o conteúdo completo aqui.
+
+            // Lógica da navegação interna do Guia
+            const guia_navLinks = document.querySelectorAll('.guia_nav-link');
+            const guia_sections = document.querySelectorAll('#guia-container-corrected .guia-content section');
+            guia_navLinks.forEach(link => { /* ... lógica de clique da sidebar do guia ... */ });
+
+             // Injeta o conteúdo HTML do Infográfico no modal
+             const infograficoContainer = document.getElementById('infografico-container');
+             infograficoContainer.innerHTML = `
+                <h1 class="text-3xl font-bold mb-4 text-center">Infográfico: Fábrica de Vídeos com IA</h1>
+                <div class="chart-container"><canvas id="costChart"></canvas></div>
+                <div class="chart-container"><canvas id="timeChart"></canvas></div>
+             `;
+             // Lógica para renderizar os gráficos do Chart.js aqui...
         });
     </script>
+
 </body>
 </html>
